@@ -12,12 +12,13 @@ This is a fabulous and pink To Do list for you to use it. Just create some To Do
 - User can see all the To Do's created
 - User can delete a To Do
 - User can create a To Do
+- User can update a To Do
 
 ## Backlog
 ---
 - User can search for an specific To Do
 - User can create different To Do list
-- User can update a To Do
+
 
 ---
 ## How to use?
