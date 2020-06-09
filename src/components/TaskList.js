@@ -5,15 +5,27 @@ import {ToDoConsumer} from './../lib/ToDoProvider' //this component will consume
 import AddToDo from './AddToDo'
 import DeleteButton from './DeleteButton'
 import UpdateButton from './UpdateButton'
+import Modal from './Modal'
 
 class TaskList extends Component {
   
+  state = {
+    show:false
+  }
+
   // when component mounts, show me all the todos
   componentDidMount() {
     this.props.getAllToDo()
   }
 
-  //We put onClick in arrow function to avoid removing all todos at first
+  handleShow = (idToDo) => {
+    this.setState({show:true})
+    this.props.oneToDoById(idToDo)
+  }
+
+  handleClose = () => {
+    this.setState({show:false})
+  }
 
   render() {
     return (
@@ -27,16 +39,21 @@ class TaskList extends Component {
                   <p className="todo-description">{todo.body}</p>
                   <p className="todo-date">Created : {todo.createdAt}</p>
                 </div>
-                <div>
+                <div className='buttons-container'>
                   <DeleteButton 
                   TodoId={todo._id} 
                   index={index} 
+                  className='delete'
                   />
                   <UpdateButton
-                  TodoId={todo._id} 
-                  index={index}
+                  handleShow={this.handleShow} 
+                  idToDo={todo._id}
                   />
                 </div>
+                <Modal 
+                  show={this.state.show}
+                  handleClose={this.handleClose}
+                  />
               </div>
             );
           })}

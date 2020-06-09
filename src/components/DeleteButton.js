@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {ToDoConsumer} from './../lib/ToDoProvider'
 
+// We put onClick in arrow function to avoid removing all todos at first
+
 
 class DeleteButton extends Component {
     

@@ -13,10 +13,12 @@ function ToDoConsumer(WrappedComponent) {
                             todos={valueFromProvider.todos}
                             title={valueFromProvider.title}
                             body={valueFromProvider.body}
+                            singleTodo={valueFromProvider.singleTodo}
                             getAllToDo={valueFromProvider.getAllToDo}
                             deleteToDo={valueFromProvider.deleteToDo}
                             createToDo={valueFromProvider.createToDo}
                             updateToDo={valueFromProvider.updateToDo}
+                            oneToDoById={valueFromProvider.oneToDoById}
                         />
                     )}
             </Consumer>
@@ -33,6 +35,7 @@ class ToDoProvider extends React.Component {
         todos: [],
         title: "",
         body: "",
+        singleTodo: {}
     }
 
     // all the calls we want to do to the API
@@ -72,14 +75,36 @@ class ToDoProvider extends React.Component {
           .catch((err) => console.log(err));
     };
 
+    oneToDoById = (todoId) => {
+        axios
+        .get(`http://localhost:4000/api/v1/todos/${todoId}`)
+        .then((response) => {
+            const todo = response.data;
+            this.setState({singleTodo:todo});
+        })
+        .catch((err) => console.log(err))
+    };
+
+    // in order to show the updated todos inside the then I have to find the index of the 
+    // updated todo for removing the previous info and put the new one with the splice
+    // method. If I don't do this, the page doesn't show the new info. 
+
     updateToDo = (title, body, todoId) => {
+
+        const previousTitle = this.state.singleTodo.title;
+        const previousBody = this.state.singleTodo.body;
+
         axios
         .put(`http://localhost:4000/api/v1/todos/${todoId}`, {
-            title:title, 
-            body:body
+            title: title ? title : previousTitle,
+            body: body ? body : previousBody
         })
         .then((response) => {
-            const todo = response.data
+            const todoList = [...this.state.todos];
+            const updatedToDo = response.data;
+            const index = this.state.todos.findIndex(todo => todo._id === updatedToDo._id)
+            todoList.splice(index, 1, updatedToDo)
+            this.setState({todos:todoList})
         })
         .catch((err) => console.log(err))
     }
@@ -91,12 +116,12 @@ class ToDoProvider extends React.Component {
     
     render() {
 
-        const {todos, title, body} = this.state
+        const {todos, title, body, singleTodo} = this.state
 
-        const {getAllToDo, deleteToDo, createToDo, updateToDo} = this
+        const {getAllToDo, deleteToDo, createToDo, updateToDo, oneToDoById} = this
 
         return (
-            <Provider value={{todos, title, body, getAllToDo, deleteToDo, createToDo, updateToDo}}>
+            <Provider value={{todos, title, body, singleTodo, getAllToDo, deleteToDo, createToDo, updateToDo, oneToDoById}}>
                 {this.props.children}
             </Provider>
         )
